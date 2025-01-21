@@ -1,14 +1,16 @@
 # .github/workflows/netlify.yml
 name: Build and Deploy to Netlify
 on:
+  workflow_dispatch:
+    inputs:
+      deploy-netlify:
+        type: boolean
+        description: Enable Netlify deployment
+        default: true
+on:
   push:
   pull_request:
   workflow_dispatch:
-inputs:
-deploy-netlify:
-  type: boolean
-  description: Enable Netlify deployment
-  default: true
 jobs:
   build:
     runs-on: ubuntu-22.04
