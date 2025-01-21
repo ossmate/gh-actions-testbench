@@ -1,16 +1,14 @@
-# .github/workflows/netlify.yml
 name: Build and Deploy to Netlify
 on:
+  push:
+  pull_request:
   workflow_dispatch:
     inputs:
       deploy-netlify:
         type: boolean
         description: Enable Netlify deployment
         default: true
-on:
-  push:
-  pull_request:
-  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -22,15 +20,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
+        timeout-minutes: 5
 
       - name: Build app
         run: npm run build
+        timeout-minutes: 5
 
       - name: Deploy to Netlify
+        # if: |
+        #   github.event_name == 'push' ||
+        #   (github.event_name == 'workflow_dispatch' && inputs.deploy-netlify == true)
         uses: nwtgck/actions-netlify@v3.0
+        timeout-minutes: 1
         with:
           publish-dir: './dist'
           production-branch: master
@@ -42,4 +47,3 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ vars.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
-        timeout-minutes: 1
