@@ -11,9 +11,9 @@ on:
 
 jobs:
   build:
-    needs: [tests]
     runs-on: ubuntu-22.04
     steps:
+      - uses: ./.github/workflows/test.yml
       - name: Checkout repository
         uses: actions/checkout@v4
 
