@@ -28,6 +28,10 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-22.04
+    permissions:
+      issues: write      # to create issue comments
+      pull-requests: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -72,5 +76,20 @@ jobs:
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
-        # if: ${{ inputs.deploy-vercel }}
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          DEPLOY_OUTPUT="$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }})"
+          DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep http | tail -n 1)
+          echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_ENV
+
+      - name: Comment with preview URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { DEPLOY_URL } = process.env;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `👁️‍🗨️ Preview URL: ${DEPLOY_URL}`
+            })
