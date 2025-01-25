@@ -8,45 +8,12 @@ on:
 jobs:
   test:
     uses: ./.github/workflows/tests.yml
-  build:
-    needs: test
-    runs-on: ubuntu-22.04
-    permissions:
-      issues: write
-      pull-requests: write
+  deploy-netlify:
+    uses: ./.github/workflows/deploy-netlify.yml
+    secrets:
+      NETLIFY_AUTH_TOKEN: ${{ vars.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Configure node
-        uses: ./.github/actions/setup-project
-
-      - name: Build app
-        run: npm run build
-        timeout-minutes: 5
-
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v3.0
-        timeout-minutes: 1
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ vars.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
-
-        with:
-          publish-dir: './dist'
-          production-branch: master
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: 'Deploy from GitHub Actions'
-          enable-pull-request-comment: false
-          enable-commit-comment: true
-          overwrites-pull-request-comment: true
-
-      - name: Deploy app to Vercel and production env
-        uses: ./.github/actions/deploy-vercel
-        with:
-          mode: 'production'
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  deploy-vercel:
+    uses: ./.github/workflows/deploy-vercel.yml
+    secrets: inherit
