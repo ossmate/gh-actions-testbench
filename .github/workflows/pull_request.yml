@@ -36,6 +36,8 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          VITE_ENVIRONMENT: 'preview'
 
       - name: Deploy app to Vercel and preview env
         uses: ./.github/actions/deploy-vercel

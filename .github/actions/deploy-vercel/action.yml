@@ -13,39 +13,41 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Install Vercel CLI
-      run: npm install --global vercel@canary
-      shell: bash
+  - name: Install Vercel CLI
+    run: npm install --global vercel@canary
+    shell: bash
 
-    - name: PROD Vercel Deployment
-      if: ${{ inputs.mode == 'production' }}
-      run: |
-        vercel pull --yes --environment=production --token=${{ inputs.vercel-token }}
-        vercel build --prod --token=${{ inputs.vercel-token }}
-        DEPLOY_OUTPUT="$(vercel deploy --token=${{ inputs.vercel-token }})"
-        DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep http | tail -n 1)
-        echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_ENV
-      shell: bash
+  - name: Link to Vercel Project
+    run: vercel link --yes --token=${{ inputs.vercel-token }}
+    shell: bash
 
-    - name: PREVIEW Vercel Deployment
-      if: ${{ inputs.mode == 'preview' }}
-      run: |
-        vercel pull --yes --environment=preview --token=${{ inputs.vercel-token }}
-        vercel build --token=${{ inputs.vercel-token }}
-        DEPLOY_OUTPUT="$(vercel deploy --token=${{ inputs.vercel-token }})"
-        DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep http | tail -n 1)
-        echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_ENV
-      shell: bash
+  - name: PROD Vercel Deployment
+    if: ${{ inputs.mode == 'production' }}
+    run: |
+      vercel pull --yes --environment=production --token=${{ inputs.vercel-token }}
+      VITE_ENVIRONMENT=production vercel build --token=${{ inputs.vercel-token }}
+      vercel deploy --prebuilt --prod --token=${{ inputs.vercel-token }}
+    shell: bash
 
-    - name: Comment with preview URL
-      if: ${{ inputs.mode == 'preview' }}
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const { DEPLOY_URL } = process.env;
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `🔍 Preview URL: ${DEPLOY_URL}`
-          });
+  - name: Preview Vercel Deployment
+    if: ${{ inputs.mode == 'preview' }}
+    run: |
+      vercel pull --yes --environment=preview --token=${{ inputs.vercel-token }}
+      vercel build --token=${{ inputs.vercel-token }}
+      DEPLOY_OUTPUT="$(vercel deploy --token=${{ inputs.vercel-token }})"
+      DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep http | tail -n 1)
+      echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_ENV
+    shell: bash
+
+  - name: Comment with preview URL
+    if: ${{ inputs.mode == 'preview' }}
+    uses: actions/github-script@v7
+    with:
+      script: |
+        const deployUrl = process.env.DEPLOY_URL;
+        github.rest.issues.createComment({
+          issue_number: context.issue.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          body: `🔍 Preview URL: ${deployUrl}`
+        })

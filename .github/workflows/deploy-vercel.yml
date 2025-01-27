@@ -17,6 +17,9 @@ jobs:
 
       - name: Build app
         run: npm run build
+        env:
+          VITE_ENVIRONMENT: 'production'
+
         timeout-minutes: 5
 
       - name: Deploy to Vercel production env
