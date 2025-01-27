@@ -3,9 +3,11 @@ on:
   workflow_call:
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  deploy-vercel:
+    environment:
+      name: 'Staging'
 
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

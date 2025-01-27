@@ -6,7 +6,10 @@ on:
       - master
 
 jobs:
-  verify-pr:
+  pr-check:
+    environment:
+      name: 'Preview'
+
     runs-on: ubuntu-22.04
     permissions:
       issues: write
