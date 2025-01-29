@@ -21,7 +21,7 @@ runs:
       vercel pull --yes --environment=production --token=${{ inputs.vercel-token }}
       PACKAGE_VERSION=$(node -p "require('./package.json').version")
       VITE_ENVIRONMENT=production VITE_APP_VERSION=$PACKAGE_VERSION vercel build --prod --token=${{ inputs.vercel-token }}
-      DEPLOY_OUTPUT="$(vercel deploy --prebuilt --token=${{ inputs.vercel-token }})"
+      DEPLOY_OUTPUT="$(vercel deploy --prebuilt --prod --token=${{ inputs.vercel-token }})"
       DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep http | tail -n 1)
       echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_ENV
     shell: bash
