@@ -4,13 +4,6 @@ const TechnicalInfo = () => {
   const environment = import.meta.env.VITE_ENVIRONMENT;
   const version = __APP_VERSION__;
 
-  // Only show on non-production environments
-  const shouldShow = ['preview', 'development', 'staging'].includes(environment?.toLowerCase() ?? '');
-
-  if (!shouldShow) {
-    return null;
-  }
-
   return (
     <footer className="fixed bottom-0 left-0 right-0 bg-gray-800 bg-opacity-90 text-white py-2 px-4 text-sm">
       <div className="container mx-auto flex justify-between items-center">
@@ -21,6 +14,7 @@ const TechnicalInfo = () => {
               environment === 'development' ? 'bg-blue-500' :
               environment === 'staging' ? 'bg-yellow-500' :
               environment === 'preview' ? 'bg-purple-500' :
+              environment === 'production' ? 'bg-green-500' :
               'bg-gray-500'
             }`}>
               {environment || "local"}

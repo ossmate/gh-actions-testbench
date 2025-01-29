@@ -15,6 +15,7 @@ jobs:
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -22,14 +23,8 @@ jobs:
     - name: Configure node
       uses: ./.github/actions/setup-project
 
-    - name: Install deps
-      run: npm ci
-
-    - name: Lint code
-      run: npm run lint
-
-    - name: Run unit tests
-      run: npm run test
+    - name: Run code quality checks
+      uses: ./.github/actions/code-quality
 
     - name: Build project
       run: npm run build

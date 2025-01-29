@@ -19,6 +19,9 @@ jobs:
     - name: Configure node
       uses: ./.github/actions/setup-project
 
+    - name: Run code quality checks
+      uses: ./.github/actions/code-quality
+
     - name: Build app
       run: npm run build
       timeout-minutes: 5

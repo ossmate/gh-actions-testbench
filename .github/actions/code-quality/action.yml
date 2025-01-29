@@ -1,0 +1,17 @@
+name: Code Quality Check
+description: Validates code formatting and runs unit tests
+
+runs:
+  using: 'composite'
+  steps:
+  - name: Install dependencies
+    run: npm ci
+    shell: bash
+
+  - name: Check code formatting
+    run: npm run lint
+    shell: bash
+
+  - name: Run unit tests
+    run: npm run test
+    shell: bash
