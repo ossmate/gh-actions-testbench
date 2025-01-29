@@ -2,6 +2,7 @@ name: Deploy vercel
 on:
   workflow_call:
 
+
 jobs:
   deploy-vercel:
     environment:
@@ -9,22 +10,22 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Configure node
-        uses: ./.github/actions/setup-project
+    - name: Configure node
+      uses: ./.github/actions/setup-project
 
-      - name: Build app
-        run: npm run build
-        timeout-minutes: 5
+    - name: Build app
+      run: npm run build
+      timeout-minutes: 5
 
-      - name: Deploy to Vercel production env
-        uses: ./.github/actions/deploy-vercel
-        with:
-          mode: 'production'
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        timeout-minutes: 1
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    - name: Deploy to Vercel production env
+      uses: ./.github/actions/deploy-vercel
+      with:
+        mode: 'production'
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+      timeout-minutes: 1
+      env:
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
