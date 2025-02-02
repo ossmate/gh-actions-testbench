@@ -1,0 +1,27 @@
+name: Deploy netlify
+on:
+  workflow_dispatch:
+
+
+jobs:
+  deploy-netlify:
+    environment:
+      name: 'Production'
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Configure node
+      uses: ./.github/actions/setup-project
+
+    - name: Run code quality checks
+      uses: ./.github/actions/code-quality
+
+    - name: Build app
+      run: npm run build
+      timeout-minutes: 5
+
+    - name: Deploy to AWS
+      run: aws s3 sync dist s3://opf-rmcatalog
